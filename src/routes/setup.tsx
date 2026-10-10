@@ -24,7 +24,7 @@ function Setup() {
     { icon: QrCode, title: "Scan the sensor QR code", body: "Hold the QR code on the sensor inside the frame." },
     { icon: CheckCircle2, title: "All set", body: "Everything is connected. You'll see readings on the Today screen." },
   ];
-  const s = steps[step];
+  const s = steps[step]!;
   const blocked = step === 2 && !scanned;
 
   return (
