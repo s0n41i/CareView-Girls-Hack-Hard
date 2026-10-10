@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Droplet, Activity, Wifi, ChevronRight } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
+import { BedsideCard } from "@/components/BedsideCard";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -37,6 +38,7 @@ function Today() {
           <p className="text-sm text-muted-foreground">Devices online</p>
         </div>
       </div>
+      <BedsideCard />
       <Link to="/alerts" className="mt-4 flex items-center justify-between rounded-2xl bg-warning-soft p-4">
         <span className="font-medium">2 alerts need attention</span>
         <ChevronRight className="h-5 w-5 text-muted-foreground" />
