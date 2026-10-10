@@ -7,23 +7,23 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Today — CareView" },
-      { name: "description", content: "A calm overview of today's care: intake, sensor activity and devices." },
+      { name: "description", content: "A calm overview of today's care: bottle lifts, sensor activity and devices." },
       { property: "og:title", content: "Today — CareView" },
-      { property: "og:description", content: "A calm overview of today's care: intake, sensor activity and devices." },
+      { property: "og:description", content: "A calm overview of today's care: bottle lifts, sensor activity and devices." },
     ],
   }),
   component: Today,
 });
 
 function Today() {
-  const intake = 850, target = 1500;
+  const lifts = 5, goal = 8;
   return (
     <AppShell title="Margaret" subtitle="Saturday, 10 October">
       <section className="rounded-2xl bg-primary p-5 text-primary-foreground">
-        <div className="flex items-center gap-2 text-sm opacity-90"><Droplet className="h-4 w-4" /> Intake today</div>
-        <p className="mt-2 font-display text-4xl font-semibold">{intake} <span className="text-lg opacity-80">/ {target} ml</span></p>
+        <div className="flex items-center gap-2 text-sm opacity-90"><Droplet className="h-4 w-4" /> Bottle lifts today</div>
+        <p className="mt-2 font-display text-4xl font-semibold">{lifts} <span className="text-lg opacity-80">/ {goal} goal</span></p>
         <div className="mt-4 h-2 rounded-full bg-primary-foreground/25">
-          <div className="h-2 rounded-full bg-primary-foreground" style={{ width: `${(intake / target) * 100}%` }} />
+          <div className="h-2 rounded-full bg-primary-foreground" style={{ width: `${(lifts / goal) * 100}%` }} />
         </div>
       </section>
       <div className="mt-4 grid grid-cols-2 gap-3">

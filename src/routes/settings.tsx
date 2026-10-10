@@ -59,7 +59,7 @@ function DevicesPanel() {
         </div>
       </div>
       <div className="flex items-center justify-between rounded-xl bg-muted p-4">
-        <span className="flex items-center gap-2 font-medium"><Droplet className="h-4 w-4 text-primary" /> Drink coaster</span>
+        <span className="flex items-center gap-2 font-medium"><Droplet className="h-4 w-4 text-primary" /> Coaster</span>
         <span className="text-sm text-muted-foreground">Online</span>
       </div>
       <Link to="/setup" className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 font-medium text-primary-foreground">
