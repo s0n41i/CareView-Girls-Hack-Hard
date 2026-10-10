@@ -100,7 +100,7 @@ function Alerts() {
 }
 
 const details: Record<string, string> = {
-  "Check needed": "The comfort sensor suggests a check would be helpful.",
+  "Check needed": "The underwear sensor suggests a check would be helpful.",
   "Bottle not lifted for 3 hours": "The bottle on the coaster hasn't been picked up since 10:15 am. Offering a drink may help.",
   "Few lifts by 2 pm": "Fewer lifts than usual so far today.",
   "Coaster offline": "The coaster hasn't connected for 20 minutes.",

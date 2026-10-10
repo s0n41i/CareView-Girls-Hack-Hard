@@ -54,7 +54,7 @@ export function BedsideCard() {
       <div className="flex items-center gap-3 rounded-2xl bg-card p-4">
         <span className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground"><ShieldCheck className="h-5 w-5" /></span>
         <div className="flex-1">
-          <p className="font-medium">Comfort sensor</p>
+          <p className="font-medium">Underwear sensor</p>
           <p className="text-sm text-muted-foreground">All fine · last change 11:40 am</p>
         </div>
         <span className="h-2.5 w-2.5 rounded-full bg-primary" />
