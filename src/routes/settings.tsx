@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { User, Bell, Cpu, Users, Lock, HelpCircle, ChevronDown, BatteryMedium, Signal, Plus, Droplet } from "lucide-react";
+import { User, Bell, Cpu, Users, Lock, HelpCircle, ChevronDown, BatteryMedium, Signal, Plus, Minus, Info, Droplet } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
