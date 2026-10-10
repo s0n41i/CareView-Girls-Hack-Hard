@@ -4,6 +4,7 @@ import { HeartHandshake, Hourglass, Hand, WifiOff, BatteryLow, Check, Clock } fr
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { cn } from "@/lib/utils";
+import { useSensorStatus, formatTime } from "@/hooks/use-sensor-status";
 
 export const Route = createFileRoute("/alerts")({
   head: () => ({
@@ -18,8 +19,8 @@ export const Route = createFileRoute("/alerts")({
 });
 
 type Kind = "urgent" | "device" | "care";
-const initial = [
-  { id: 1, kind: "urgent" as Kind, icon: HeartHandshake, msg: "Check needed", time: "1:28 pm" },
+type Alert = { id: number; kind: Kind; icon: typeof Hand; msg: string; time: string };
+const initial: Alert[] = [
   { id: 2, kind: "care" as Kind, icon: Hourglass, msg: "Bottle not lifted for 3 hours", time: "1:15 pm" },
   { id: 3, kind: "care" as Kind, icon: Hand, msg: "Few lifts by 2 pm", time: "12:45 pm" },
   { id: 4, kind: "device" as Kind, icon: WifiOff, msg: "Coaster offline", time: "11:10 am" },
@@ -28,19 +29,32 @@ const initial = [
 const filters = ["All", "Urgent", "Devices"] as const;
 
 function Alerts() {
-  const [items, setItems] = useState(initial);
-  const [snoozed, setSnoozed] = useState<typeof initial>([]);
+  const { data: sensor } = useSensorStatus();
+  const [dismissed, setDismissed] = useState<Set<number>>(new Set());
+  // Live alerts are keyed by the moment they started, so a new episode alerts again.
+  const live: Alert[] = [];
+  if (sensor?.needsCheck && sensor.needsCheckSince)
+    live.push({ id: sensor.needsCheckSince, kind: "urgent", icon: HeartHandshake, msg: "Check needed", time: formatTime(sensor.needsCheckSince) });
+  if (sensor && !sensor.online)
+    live.push({ id: sensor.lastSeen + 1, kind: "device", icon: WifiOff, msg: "Sensor offline", time: formatTime(sensor.lastSeen) });
+  const [mock, setMock] = useState(initial);
+  const items = [...live.filter((a) => !dismissed.has(a.id)), ...mock];
+  const isLive = (id: number) => live.some((a) => a.id === id);
+  const remove = (id: number) => isLive(id) ? setDismissed((d) => new Set(d).add(id)) : setMock((s) => s.filter((a) => a.id !== id));
+  const [snoozed, setSnoozed] = useState<Alert[]>([]);
   const [openId, setOpenId] = useState<number | null>(null);
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const shown = items.filter((a) => filter === "All" || (filter === "Urgent" ? a.kind === "urgent" : a.kind === "device"));
-  const done = (id: number) => { setItems((s) => s.filter((a) => a.id !== id)); setOpenId(null); toast("Marked as done"); };
+  const done = (id: number) => { remove(id); setOpenId(null); toast("Marked as done"); };
   const snooze = (id: number) => {
     const a = items.find((x) => x.id === id); if (!a) return;
-    setItems((s) => s.filter((x) => x.id !== id)); setSnoozed((s) => [a, ...s]); setOpenId(null); toast("Snoozed for 1 hour");
+    remove(id); setSnoozed((s) => [a, ...s]); setOpenId(null); toast("Snoozed for 1 hour");
   };
   const undo = (id: number) => {
     const a = snoozed.find((x) => x.id === id); if (!a) return;
-    setSnoozed((s) => s.filter((x) => x.id !== id)); setItems((s) => [...s, a].sort((x, y) => x.id - y.id));
+    setSnoozed((s) => s.filter((x) => x.id !== id));
+    if (dismissed.has(id)) setDismissed((d) => { const n = new Set(d); n.delete(id); return n; });
+    else setMock((s) => [...s, a].sort((x, y) => x.id - y.id));
   };
 
   return (
@@ -101,6 +115,7 @@ function Alerts() {
 
 const details: Record<string, string> = {
   "Check needed": "The underwear sensor suggests a check would be helpful.",
+  "Sensor offline": "The underwear sensor hasn't connected for a few minutes. Check it's switched on and within Wi-Fi range.",
   "Bottle not lifted for 3 hours": "The bottle on the coaster hasn't been picked up since 10:15 am. Offering a drink may help.",
   "Few lifts by 2 pm": "Fewer lifts than usual so far today.",
   "Coaster offline": "The coaster hasn't connected for 20 minutes.",

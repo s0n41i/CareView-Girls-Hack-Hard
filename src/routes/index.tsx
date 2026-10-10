@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Droplet, Activity, Wifi, ChevronRight } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { BedsideCard } from "@/components/BedsideCard";
+import { useSensorStatus } from "@/hooks/use-sensor-status";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/")({
 
 function Today() {
   const lifts = 5, goal = 8;
+  const { data: sensor } = useSensorStatus();
   return (
     <AppShell title="Margaret" subtitle="Saturday, 10 October">
       <section className="rounded-2xl bg-primary p-5 text-primary-foreground">
@@ -29,7 +31,7 @@ function Today() {
       <div className="mt-4 grid grid-cols-2 gap-3">
         <div className="rounded-2xl bg-card p-4">
           <Activity className="h-5 w-5 text-primary" />
-          <p className="mt-3 font-display text-2xl font-semibold">3</p>
+          <p className="mt-3 font-display text-2xl font-semibold">{sensor?.eventsToday ?? "–"}</p>
           <p className="text-sm text-muted-foreground">Sensor events</p>
         </div>
         <div className="rounded-2xl bg-card p-4">

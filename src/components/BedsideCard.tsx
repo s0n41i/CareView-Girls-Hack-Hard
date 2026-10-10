@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { BedDouble, ShieldCheck, Music, Square } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useSensorStatus, formatTime } from "@/hooks/use-sensor-status";
 
 const sounds = ["Gentle rain", "Soft waves", "Lullaby"] as const;
 type Sound = (typeof sounds)[number];
@@ -37,6 +38,27 @@ function startSound(kind: Sound) {
   return ctx;
 }
 
+function UnderwearSensorRow() {
+  const { data: sensor, isPending, isError } = useSensorStatus();
+  const tone = !sensor || !sensor.online ? "offline" : sensor.needsCheck ? "check" : "fine";
+  const text = isPending ? "Connecting…"
+    : isError ? "Can't reach the server"
+    : !sensor ? "Waiting for sensor"
+    : !sensor.online ? `Offline · last seen ${formatTime(sensor.lastSeen)}`
+    : sensor.needsCheck ? `Check needed since ${formatTime(sensor.needsCheckSince ?? sensor.lastSeen)}`
+    : sensor.lastChangeAt ? `All fine · last change ${formatTime(sensor.lastChangeAt)}` : "All fine";
+  return (
+    <div className={cn("flex items-center gap-3 rounded-2xl p-4", tone === "check" ? "bg-warning-soft" : "bg-card")}>
+      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground"><ShieldCheck className="h-5 w-5" /></span>
+      <div className="flex-1">
+        <p className="font-medium">Underwear sensor</p>
+        <p className="text-sm text-muted-foreground">{text}</p>
+      </div>
+      <span className={cn("h-2.5 w-2.5 rounded-full", tone === "fine" ? "bg-primary" : tone === "check" ? "bg-warning" : "bg-muted-foreground")} />
+    </div>
+  );
+}
+
 export function BedsideCard() {
   const [sound, setSound] = useState<Sound>("Gentle rain");
   const [playing, setPlaying] = useState(false);
@@ -51,14 +73,7 @@ export function BedsideCard() {
   return (
     <section className="mt-4 space-y-3">
       <h2 className="text-lg font-semibold">Sensors</h2>
-      <div className="flex items-center gap-3 rounded-2xl bg-card p-4">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground"><ShieldCheck className="h-5 w-5" /></span>
-        <div className="flex-1">
-          <p className="font-medium">Underwear sensor</p>
-          <p className="text-sm text-muted-foreground">All fine · last change 11:40 am</p>
-        </div>
-        <span className="h-2.5 w-2.5 rounded-full bg-primary" />
-      </div>
+      <UnderwearSensorRow />
       <div className="rounded-2xl bg-card p-4">
         <div className="flex items-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground"><BedDouble className="h-5 w-5" /></span>

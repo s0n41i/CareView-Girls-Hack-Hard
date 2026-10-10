@@ -30,3 +30,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Device secrets
+.env
+firmware/**/secrets.h

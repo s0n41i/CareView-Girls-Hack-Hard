@@ -40,3 +40,18 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Sensor backend
+
+The underwear sensor (Axiometa Genesis Mini + soil hygrometer) posts readings to
+`POST /api/device/readings`; the app reads `GET /api/sensor/status`. Firmware, wiring
+and calibration are in [`firmware/README.md`](firmware/README.md).
+
+```sh
+cp .env.example .env   # set DEVICE_TOKEN (openssl rand -hex 24)
+bun run dev
+bun --env-file=.env scripts/simulate-sensor.ts   # fake device, no hardware needed
+```
+
+Readings are held in memory (`src/lib/sensor/store.server.ts`), so they reset on restart
+and won't persist on serverless hosting. Swap in a database before deploying.

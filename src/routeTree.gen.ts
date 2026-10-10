@@ -14,6 +14,8 @@ import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SetupRouteImport } from './routes/setup'
+import { Route as ApiDeviceReadingsRouteImport } from './routes/api/device/readings'
+import { Route as ApiSensorStatusRouteImport } from './routes/api/sensor/status'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +42,16 @@ const SetupRoute = SetupRouteImport.update({
   path: '/setup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDeviceReadingsRoute = ApiDeviceReadingsRouteImport.update({
+  id: '/api/device/readings',
+  path: '/api/device/readings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSensorStatusRoute = ApiSensorStatusRouteImport.update({
+  id: '/api/sensor/status',
+  path: '/api/sensor/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +59,8 @@ export interface FileRoutesByFullPath {
   '/history': typeof HistoryRoute
   '/settings': typeof SettingsRoute
   '/setup': typeof SetupRoute
+  '/api/device/readings': typeof ApiDeviceReadingsRoute
+  '/api/sensor/status': typeof ApiSensorStatusRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +68,8 @@ export interface FileRoutesByTo {
   '/history': typeof HistoryRoute
   '/settings': typeof SettingsRoute
   '/setup': typeof SetupRoute
+  '/api/device/readings': typeof ApiDeviceReadingsRoute
+  '/api/sensor/status': typeof ApiSensorStatusRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +78,37 @@ export interface FileRoutesById {
   '/history': typeof HistoryRoute
   '/settings': typeof SettingsRoute
   '/setup': typeof SetupRoute
+  '/api/device/readings': typeof ApiDeviceReadingsRoute
+  '/api/sensor/status': typeof ApiSensorStatusRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/alerts' | '/history' | '/settings' | '/setup'
+  fullPaths:
+    | '/'
+    | '/alerts'
+    | '/history'
+    | '/settings'
+    | '/setup'
+    | '/api/device/readings'
+    | '/api/sensor/status'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/alerts' | '/history' | '/settings' | '/setup'
-  id: '__root__' | '/' | '/alerts' | '/history' | '/settings' | '/setup'
+  to:
+    | '/'
+    | '/alerts'
+    | '/history'
+    | '/settings'
+    | '/setup'
+    | '/api/device/readings'
+    | '/api/sensor/status'
+  id:
+    | '__root__'
+    | '/'
+    | '/alerts'
+    | '/history'
+    | '/settings'
+    | '/setup'
+    | '/api/device/readings'
+    | '/api/sensor/status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +117,8 @@ export interface RootRouteChildren {
   HistoryRoute: typeof HistoryRoute
   SettingsRoute: typeof SettingsRoute
   SetupRoute: typeof SetupRoute
+  ApiDeviceReadingsRoute: typeof ApiDeviceReadingsRoute
+  ApiSensorStatusRoute: typeof ApiSensorStatusRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +158,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SetupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/device/readings': {
+      id: '/api/device/readings'
+      path: '/api/device/readings'
+      fullPath: '/api/device/readings'
+      preLoaderRoute: typeof ApiDeviceReadingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/sensor/status': {
+      id: '/api/sensor/status'
+      path: '/api/sensor/status'
+      fullPath: '/api/sensor/status'
+      preLoaderRoute: typeof ApiSensorStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +181,8 @@ const rootRouteChildren: RootRouteChildren = {
   HistoryRoute: HistoryRoute,
   SettingsRoute: SettingsRoute,
   SetupRoute: SetupRoute,
+  ApiDeviceReadingsRoute: ApiDeviceReadingsRoute,
+  ApiSensorStatusRoute: ApiSensorStatusRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

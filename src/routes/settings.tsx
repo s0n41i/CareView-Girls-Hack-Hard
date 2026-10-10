@@ -4,6 +4,7 @@ import { User, Bell, Cpu, Users, Lock, HelpCircle, ChevronDown, BatteryMedium, S
 import { AppShell } from "@/components/AppShell";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { useSensorStatus, signalLabel } from "@/hooks/use-sensor-status";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -72,13 +73,17 @@ function AlertsPanel() {
 }
 
 function DevicesPanel() {
+  const { data: sensor } = useSensorStatus();
   return (
     <div className="space-y-3">
       <div className="rounded-xl bg-muted p-4">
-        <p className="font-medium">Underwear sensor</p>
+        <div className="flex items-center justify-between">
+          <p className="font-medium">Underwear sensor</p>
+          <span className="text-sm text-muted-foreground">{!sensor ? "Not connected" : sensor.online ? "Online" : "Offline"}</span>
+        </div>
         <div className="mt-2 flex gap-5 text-sm text-muted-foreground">
-          <span className="flex items-center gap-1.5"><BatteryMedium className="h-4 w-4 text-primary" /> 78%</span>
-          <span className="flex items-center gap-1.5"><Signal className="h-4 w-4 text-primary" /> Good</span>
+          <span className="flex items-center gap-1.5"><BatteryMedium className="h-4 w-4 text-primary" /> {sensor?.batteryPct != null ? `${sensor.batteryPct}%` : "—"}</span>
+          <span className="flex items-center gap-1.5"><Signal className="h-4 w-4 text-primary" /> {signalLabel(sensor?.rssi ?? null)}</span>
         </div>
       </div>
       <div className="flex items-center justify-between rounded-xl bg-muted p-4">
