@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CareView</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #ebe9ea; --paper: #f5f4f2; --white: #ffffff; --ink: #111111; --muted: #74716c; --line: rgba(17,17,17,.12);
+    --lime: #e5ff45; --coral: #ff6b4a;
+    --ok: #3fbf7f; --warn: #ffb020; --bad: #ff4d3a;
+    --sans: "Inter Tight", -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --serif: "Instrument Serif", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  html, body { margin: 0; }
+  body { background: var(--paper); color: var(--ink); font: 400 16px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
+  a { color: inherit; }
+  img { display: block; max-width: 100%; }
+  .serif { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; }
+
+  .announce { background: var(--lime); text-align: center; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding: 7px 12px; font-weight: 500; }
+  nav.top { position: sticky; top: 0; z-index: 40; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 14px 28px;
+    background: color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  nav.top .l { display: flex; gap: 22px; font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; }
+  nav.top .l a { text-decoration: none; }
+  .wordmark { border: 1.5px solid var(--ink); border-radius: 50%; padding: 6px 18px; font-weight: 500; font-size: 22px; letter-spacing: -.04em; text-decoration: none; }
+  nav.top .r { justify-self: end; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 999px; font-size: 13px; font-weight: 500; letter-spacing: .02em; text-decoration: none; transition: transform .15s; }
+  .pill:active { transform: scale(.97); }
+  .pill.dark { background: var(--ink); color: #fff; }
+  .pill.lime { background: var(--lime); color: var(--ink); font-size: 15px; padding: 14px 28px; }
+  @media (max-width: 760px) { nav.top .l { display: none; } nav.top { grid-template-columns: auto 1fr; } .wordmark { justify-self: start; } }
+
+  .hero { background: var(--bg); display: grid; grid-template-columns: 1fr 1.1fr; align-items: center; min-height: calc(100vh - 100px); padding: 20px 28px 0; overflow: hidden; }
+  .hero h1 { font-weight: 300; font-size: clamp(48px, 7.4vw, 112px); line-height: .95; letter-spacing: -.045em; margin: 0 0 26px; }
+  .hero h1 .serif { display: block; }
+  .hero p { font-size: 17px; color: var(--muted); margin: 0 0 30px; max-width: 380px; }
+  .hero .imgwrap { position: relative; }
+  .hero .imgwrap img { width: 100%; animation: hover 7s ease-in-out infinite; -webkit-mask-image: radial-gradient(closest-side, #000 82%, transparent); mask-image: radial-gradient(closest-side, #000 82%, transparent); }
+  @keyframes hover { 50% { transform: translateY(-10px) rotate(-.6deg); } }
+  .hero .tagdot { position: absolute; left: 47.5%; top: 31.5%; width: 14px; height: 14px; border-radius: 50%; background: var(--lime); animation: ping 2.2s infinite; }
+  .hero .tagtxt { position: absolute; left: 52%; top: 24%; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; background: var(--white); padding: 6px 10px; border-radius: 999px; }
+  @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(229,255,69,.9); } 80% { box-shadow: 0 0 0 18px rgba(229,255,69,0); } 100% { box-shadow: 0 0 0 0 rgba(229,255,69,0); } }
+  @media (max-width: 860px) { .hero { grid-template-columns: 1fr; padding-top: 40px; } }
+
+  .marquee { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); overflow: hidden; white-space: nowrap; background: var(--paper); transform: rotate(-1deg); margin: 34px -10px; }
+  .marquee div { display: inline-block; padding: 14px 0; animation: marq 28s linear infinite; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; }
+  .marquee span { margin: 0 34px; }
+  @keyframes marq { to { transform: translateX(-50%); } }
+
+  section { padding: 110px 28px; }
+  .inner { max-width: 1240px; margin: 0 auto; }
+  .h2 { font-weight: 300; font-size: clamp(36px, 5vw, 72px); letter-spacing: -.04em; line-height: 1; margin: 0 0 14px; }
+  .sub { color: var(--muted); font-size: 16px; margin: 0; }
+  .center { text-align: center; }
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.8,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  .sim { position: relative; margin-top: 46px; height: min(78vh, 760px); min-height: 520px; border-radius: 34px; overflow: hidden;
+    background: radial-gradient(120% 90% at 30% 10%, #ffffff 0%, #ecebe8 60%, #e3e1dd 100%); }
+  .sim canvas { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+  .sim canvas:active { cursor: grabbing; }
+  .ov { position: absolute; pointer-events: none; }
+  .ov > * { pointer-events: auto; }
+  .ov.tl { left: 28px; top: 26px; }
+  .ov.tr { right: 28px; top: 26px; display: flex; gap: 8px; }
+  .rawbig { font-weight: 300; font-size: 72px; letter-spacing: -.05em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .rawlbl { font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+  .meter { width: 200px; height: 4px; background: rgba(17,17,17,.1); border-radius: 2px; margin-top: 12px; position: relative; }
+  .meter i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ink); border-radius: 2px; transition: width .2s; }
+  .meter b { position: absolute; top: -4px; width: 2px; height: 12px; background: var(--warn); }
+  .chip { display: inline-flex; align-items: center; gap: 8px; background: var(--white); border-radius: 999px; padding: 8px 14px; font-size: 13px; font-weight: 500; box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+  .chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+  .dock { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); display: flex; gap: 14px; background: rgba(255,255,255,.75);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding: 10px; border-radius: 999px; box-shadow: 0 10px 30px rgba(0,0,0,.08); }
+  .dock button { width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; background: var(--white); position: relative; transition: transform .15s, background .2s; touch-action: none; }
+  .dock button:active { transform: scale(.92); }
+  .dock button.main { background: var(--ink); color: #fff; width: 66px; height: 66px; margin: -4px 0; }
+  .dock button.live { background: var(--lime); color: var(--ink); }
+  .dock button.connect { width: auto; height: 56px; padding: 0 24px; gap: 10px; display: flex; align-items: center; border-radius: 999px; background: var(--ink); color: #fff; font-size: 14px; }
+  .dock button.connect b { font-weight: 500; }
+  .connect-card { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: rgba(255,255,255,.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-radius: 22px; padding: 18px 24px; text-align: center; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 20px 40px -20px rgba(0,0,0,.25); pointer-events: none; }
+  .connect-card b { font-weight: 500; font-size: 18px; letter-spacing: -.02em; } .connect-card span { font-size: 12.5px; color: var(--muted); }
+  .connect-card[hidden] { display: none; }
+  .dock button span { position: absolute; bottom: 100%; margin-bottom: 12px; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); white-space: nowrap; opacity: 0; transition: opacity .2s; }
+  .dock button:hover span { opacity: 1; }
+  .tag3d { position: absolute; transform: translate(-50%, -100%); font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; background: rgba(255,255,255,.85); padding: 5px 10px; border-radius: 999px; pointer-events: none; white-space: nowrap; margin-top: -14px; }
+  .hint { position: absolute; left: 28px; bottom: 34px; font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+  @media (max-width: 760px) { .hint { display: none; } .rawbig { font-size: 52px; } .tag3d { display: none; } }
+
+  .phone { position: absolute; right: 28px; top: 50%; transform: translateY(-50%); width: 210px; height: 430px; border-radius: 38px; background: #0d0d0d; padding: 7px; box-shadow: 0 30px 60px -20px rgba(0,0,0,.35); }
+  .phone .scr { width: 100%; height: 100%; border-radius: 31px; overflow: hidden; position: relative; color: #fff; padding: 40px 8px 0;
+    background: radial-gradient(120% 70% at 20% 10%, #f7b48a 0%, transparent 55%), radial-gradient(120% 80% at 90% 30%, #8b6fd6 0%, transparent 60%), radial-gradient(120% 90% at 40% 100%, #2c5d73 0%, transparent 70%), #3b3f6b; }
+  .phone .isl { position: absolute; top: 9px; left: 50%; transform: translateX(-50%); width: 62px; height: 18px; border-radius: 10px; background: #000; }
+  .phone .clk { text-align: center; font-size: 50px; font-weight: 600; line-height: 1; letter-spacing: -1px; }
+  .phone .dt { text-align: center; font-size: 11px; font-weight: 500; opacity: .85; margin-bottom: 4px; }
+  .notifs { position: absolute; left: 8px; right: 8px; bottom: 40px; display: flex; flex-direction: column; gap: 6px; }
+  .notif { display: flex; gap: 8px; background: rgba(245,245,245,.8); color: #000; border-radius: 16px; padding: 9px 10px; backdrop-filter: blur(20px); font-size: 11.5px; line-height: 1.3; animation: nin .5s cubic-bezier(.2,.9,.3,1.2); }
+  .notif .ic { width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(#67f07f, #1cc43f); flex: none; display: grid; place-items: center; }
+  .notif b { display: flex; justify-content: space-between; font-size: 11.5px; } .notif b span { font-weight: 400; opacity: .5; }
+  @keyframes nin { from { transform: translateY(-16px) scale(.95); opacity: 0; } }
+  @media (max-width: 1000px) { .phone { display: none; } }
+
+  .how { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 50px; }
+  @media (max-width: 860px) { .how { grid-template-columns: 1fr; } }
+  .how figure { margin: 0; }
+  .how .ph { aspect-ratio: 4 / 5; border-radius: 22px; overflow: hidden; background: var(--bg); position: relative; }
+  .how .ph img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s cubic-bezier(.2,.8,.2,1); }
+  .how figure:hover img { transform: scale(1.05); }
+  .how figcaption { display: flex; gap: 12px; align-items: baseline; margin-top: 14px; font-size: 15px; }
+  .how figcaption b { width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 12px; display: grid; place-items: center; flex: none; }
+  .ph .notifbig { position: absolute; left: 18px; right: 18px; top: 40%; }
+  .ph .notifbig .notif { font-size: 15px; padding: 14px; border-radius: 22px; box-shadow: 0 20px 40px rgba(0,0,0,.15); }
+  .ph .notifbig .notif .ic { width: 38px; height: 38px; border-radius: 10px; }
+  .ph .notifbig .notif b { font-size: 15px; }
+
+  .explode { height: 320vh; position: relative; background: var(--bg); padding: 0; }
+  .explode .stick { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+  .explode canvas { width: 100%; height: 100%; display: block; }
+  .explode .head { position: absolute; left: 28px; top: 90px; max-width: 420px; }
+  .explode .price { position: absolute; right: 28px; bottom: 40px; text-align: right; }
+  .explode .price b { display: block; font-weight: 300; font-size: clamp(56px, 8vw, 120px); letter-spacing: -.05em; line-height: .9; font-variant-numeric: tabular-nums; }
+  .explode .price span { color: var(--muted); font-size: 14px; }
+  .plabel { position: absolute; transform: translate(0, -50%); display: flex; align-items: center; gap: 10px; font-size: 13px; pointer-events: none; white-space: nowrap; }
+  .plabel::before { content: ""; width: 46px; height: 1px; background: var(--ink); }
+  .plabel em { font-style: normal; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .statement { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+  @media (max-width: 860px) { .statement { grid-template-columns: 1fr; } }
+  .statement .ph { border-radius: 26px; overflow: hidden; aspect-ratio: 1; }
+  .statement .ph img { width: 100%; height: 100%; object-fit: cover; }
+  .statement h3 { font-weight: 300; font-size: clamp(40px, 5vw, 76px); letter-spacing: -.045em; line-height: 1.02; margin: 0; text-align: center; }
+
+  .places { display: grid; grid-template-columns: 1fr 1.4fr; gap: 18px; margin-top: 50px; }
+  @media (max-width: 860px) { .places { grid-template-columns: 1fr; } }
+  .place { border-radius: 28px; background: var(--white); padding: 30px; min-height: 380px; display: flex; flex-direction: column; }
+  .place h4 { font-weight: 400; font-size: 26px; letter-spacing: -.03em; margin: 0; }
+  .place p { color: var(--muted); margin: 4px 0 0; font-size: 14px; }
+  .place .vis { flex: 1; display: grid; place-items: center; margin-top: 24px; }
+  .clipicon { width: 54px; height: 38px; border-radius: 11px; background: #161616; position: relative; box-shadow: 0 10px 20px -8px rgba(0,0,0,.4); }
+  .clipicon::after { content: ""; position: absolute; right: 9px; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 8px var(--ok); transition: background .3s, box-shadow .3s; }
+  .clipicon.alert::after { background: var(--coral); box-shadow: 0 0 12px var(--coral); }
+  .homevis { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; justify-content: center; }
+  .homevis .wave { width: 60px; height: 2px; background: repeating-linear-gradient(90deg, var(--ink) 0 6px, transparent 6px 12px); background-size: 24px 2px; animation: dash 1s linear infinite; }
+  @keyframes dash { to { background-position: 24px 0; } }
+  .bubble { background: #e9e9eb; border-radius: 18px; padding: 10px 14px; font-size: 14px; max-width: 200px; transition: opacity .4s; }
+  .grid8 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 18px; width: 100%; max-width: 460px; }
+  .grid8 .cell { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); letter-spacing: .04em; }
+  .grid8 .cell .room { color: var(--ink); font-weight: 500; font-size: 12px; }
+  .grid8 .cell.alert .room { color: var(--coral); }
+
+  .nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px 18px; margin-top: 50px; }
+  @media (max-width: 860px) { .nums { grid-template-columns: 1fr; } }
+  .num { border-top: 1.5px solid var(--ink); padding-top: 18px; }
+  .num b { display: block; font-weight: 300; font-size: clamp(56px, 6vw, 92px); letter-spacing: -.05em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .num span { display: block; margin-top: 10px; color: var(--muted); font-size: 14.5px; max-width: 280px; }
+  sup a { font-size: 10px; text-decoration: none; color: var(--muted); margin-left: 2px; }
+  .quote { margin-top: 120px; text-align: center; }
+  .quote .serif { font-size: clamp(80px, 13vw, 200px); line-height: .9; display: block; }
+  .quote p { color: var(--muted); margin: 18px 0 0; }
+  .todo { display: inline-block; border: 1.5px dashed var(--coral); color: var(--coral); border-radius: 999px; font-size: 12px; padding: 4px 12px; margin-top: 14px; }
+
+  .cost { background: var(--coral); color: var(--ink); border-radius: 34px; padding: 70px 40px; text-align: center; }
+  .cost .big { font-weight: 300; font-size: clamp(90px, 14vw, 210px); letter-spacing: -.06em; line-height: .85; }
+  .cost .big small { font-size: .2em; letter-spacing: -.02em; }
+  .stack { display: flex; height: 54px; border-radius: 999px; overflow: hidden; max-width: 760px; margin: 40px auto 12px; background: rgba(255,255,255,.3); }
+  .stack div { display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; transition: flex-grow .8s; flex-basis: 0; white-space: nowrap; }
+  .stack .c { background: var(--ink); color: #fff; } .stack .g { background: var(--white); }
+  .tiers { display: inline-flex; gap: 4px; background: rgba(255,255,255,.35); padding: 4px; border-radius: 999px; margin-bottom: 26px; }
+  .tiers button { padding: 9px 18px; border-radius: 999px; font-size: 14px; font-weight: 500; }
+  .tiers button.on { background: var(--ink); color: #fff; }
+  .kitnote { margin: 10px 0 0; font-size: 15px; opacity: .75; }
+  .steps { display: flex; justify-content: center; gap: 36px; margin-top: 30px; flex-wrap: wrap; }
+  .steps div { text-align: center; } .steps b { display: block; font-weight: 300; font-size: 34px; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .steps span { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; opacity: .7; }
+  .steps div.on b { font-weight: 500; }
+  .gsel { display: inline-flex; gap: 6px; margin-top: 14px; background: rgba(255,255,255,.35); padding: 4px; border-radius: 999px; }
+  .gsel button { padding: 7px 14px; border-radius: 999px; font-size: 13px; }
+  .gsel button.on { background: var(--white); }
+  details.bom { max-width: 760px; margin: 26px auto 0; text-align: left; background: rgba(255,255,255,.4); border-radius: 22px; padding: 6px 22px; }
+  details.bom summary { cursor: pointer; padding: 12px 0; font-size: 14px; font-weight: 500; list-style: none; text-align: center; }
+  details.bom summary::-webkit-details-marker { display: none; }
+  details.bom table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 14px; }
+  details.bom td { padding: 6px 0; border-top: 1px solid rgba(17,17,17,.12); }
+  details.bom td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: 10px; }
+  details.bom th { text-align: left; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; padding: 14px 0 4px; }
+  details.bom .note { font-size: 12px; opacity: .75; padding-bottom: 14px; }
+
+  footer { padding: 70px 28px 50px; background: var(--ink); color: rgba(255,255,255,.6); font-size: 12.5px; }
+  footer .inner { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; }
+  @media (max-width: 860px) { footer .inner { grid-template-columns: 1fr; } }
+  footer h5 { color: #fff; font-weight: 500; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 12px; }
+  footer ol { padding-left: 18px; margin: 0; display: grid; gap: 6px; }
+  footer a { color: rgba(255,255,255,.85); }
+  footer .wm { color: #fff; border-color: #fff; display: inline-block; margin-bottom: 18px; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<nav class="top">
+  <div class="l"><a href="#prototype">Prototype</a><a href="#how">How</a><a href="#clip">The clip</a><a href="#impact">Impact</a></div>
+  <a class="wordmark" href="#">careview.</a>
+  <div class="r"><a class="pill dark" href="#prototype">Try it →</a></div>
+</nav>
+
+<header class="hero">
+  <div>
+    <h1 class="reveal">Care that knows <span class="serif">before you check.</span></h1>
+    <p class="reveal">Sensing underwear and a reusable clip that quietly tells a carer when a change is needed.</p>
+    <a class="pill lime reveal" href="#prototype">Try the prototype →</a>
+  </div>
+  <div class="imgwrap reveal">
+    <img src="img/careview-briefs.png" alt="Black briefs with a small CareView clip at the front waistband">
+  </div>
+</header>
+<div class="marquee" aria-hidden="true"><div>
+  <span>Discreet alerts →</span><span>Reusable clip →</span><span>Washable garment →</span><span>Home &amp; care homes →</span><span>Personal IDs →</span>
+  <span>Discreet alerts →</span><span>Reusable clip →</span><span>Washable garment →</span><span>Home &amp; care homes →</span><span>Personal IDs →</span>
+</div></div>
+
+<section id="prototype" style="padding-top:70px">
+  <div class="inner">
+    <div class="center">
+      <h2 class="h2 reveal">My <span class="serif">prototype</span></h2>
+      <p class="sub reveal">Live from my Genesis Mini and moisture sensor. Plug it in over USB to see real readings.</p>
+    </div>
+    <div class="sim reveal" id="sim">
+      <canvas id="simCanvas"></canvas>
+      <div id="tags"></div>
+      <div class="ov tl">
+        <div class="rawbig" id="simRaw">—</div>
+        <div class="rawlbl">raw reading · lower is wetter</div>
+        <div class="meter"><i id="meterFill" style="width:100%"></i><b style="left:61%"></b></div>
+      </div>
+      <div class="ov tr"><span class="chip" id="srcChip">Not connected</span><span class="chip"><i id="stDot" style="background:#b0aea9"></i><span id="stText">Offline</span></span></div>
+      <div class="hint">Drag to rotate</div>
+      <div class="connect-card" id="connectCard"><b>Connect the prototype</b><span>Chrome or Edge · close Arduino's Serial Monitor first</span></div>
+      <div class="dock">
+        <button id="btnLive" class="connect" aria-label="Connect my board"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 7V3m6 4V3M7 7h10v4a5 5 0 0 1-10 0V7Zm5 9v5"/></svg><b id="liveLbl">Connect my board</b></button>
+      </div>
+      <div class="phone"><div class="scr"><div class="isl"></div><div class="dt" id="pDate"></div><div class="clk" id="pClock">9:41</div><div class="notifs" id="notifs"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="how" style="background:var(--white)">
+  <div class="inner">
+    <div class="center"><h2 class="h2 reveal"><span class="serif">Stitch, sense, send.</span></h2></div>
+    <div class="how">
+      <figure class="reveal"><div class="ph"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Conductive_thread.jpg/1280px-Conductive_thread.jpg" alt="Bobbin of conductive thread" loading="lazy"></div>
+        <figcaption><b>1</b>Conductive thread, stitched into the gusset.</figcaption></figure>
+      <figure class="reveal"><div class="ph"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Drop_of_water_on_water-resistant_textile_%28100%25_polyester%29.jpg/1280px-Drop_of_water_on_water-resistant_textile_%28100%25_polyester%29.jpg" alt="Water drop on woven fabric" loading="lazy"></div>
+        <figcaption><b>2</b>Moisture bridges the lines. The clip feels it.</figcaption></figure>
+      <figure class="reveal"><div class="ph" style="background:radial-gradient(120% 70% at 20% 10%, #f7b48a 0%, transparent 55%), radial-gradient(120% 80% at 90% 30%, #8b6fd6 0%, transparent 60%), radial-gradient(120% 90% at 40% 100%, #2c5d73 0%, transparent 70%), #3b3f6b">
+          <div class="notifbig"><div class="notif"><span class="ic"><svg width="20" height="20" viewBox="0 0 40 40"><path d="M20 8.5c-7.5 0-13.5 4.9-13.5 11 0 3.5 2 6.6 5.1 8.6-.3 1.7-1.3 3.3-2.7 4.4 2.7-.1 5.1-1.1 6.8-2.7 1.4.4 2.8.7 4.3.7 7.5 0 13.5-4.9 13.5-11s-6-11-13.5-11Z" fill="#fff"/></svg></span><div style="flex:1"><b>CareView <span>now</span></b>Margaret may need a check.</div></div></div></div>
+        <figcaption><b>3</b>A discreet text to the carer.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="explode" id="clip">
+  <div class="stick">
+    <canvas id="clipCanvas"></canvas>
+    <div id="plabels"></div>
+    <div class="head"><h2 class="h2">The <span class="serif">clip.</span></h2><p class="sub">Clips on. Moves to the next garment. Lasts.</p></div>
+    <div class="price"><b id="clipPrice">£0.00</b><span>parts per clip at 1,000+ units</span></div>
+  </div>
+</section>
+
+<section style="background:var(--white)">
+  <div class="inner statement">
+    <div class="ph reveal"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Gestickte_Textile_Sensorfl%C3%A4chen.jpg/1280px-Gestickte_Textile_Sensorfl%C3%A4chen.jpg" alt="Embroidered textile sensor surfaces" loading="lazy"></div>
+    <h3 class="reveal">Fewer checks.<br>Faster help.<br><span class="serif">More dignity.</span></h3>
+  </div>
+</section>
+
+<section id="places">
+  <div class="inner">
+    <div class="center"><h2 class="h2 reveal">At home. <span class="serif">In care homes.</span></h2><p class="sub reveal">Every clip carries a personal ID.</p></div>
+    <div class="places">
+      <div class="place reveal">
+        <h4>Home</h4><p>One person, one clip, one text.</p>
+        <div class="vis"><div class="homevis"><div class="clipicon" id="homeClip"></div><div class="wave"></div><div class="bubble" id="homeBubble">Margaret may need a check.</div></div></div>
+      </div>
+      <div class="place reveal">
+        <h4>Care home</h4><p>Every room on one screen. Alerts name the room.</p>
+        <div class="vis"><div class="grid8" id="grid8"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="impact" style="background:var(--white)">
+  <div class="inner">
+    <h2 class="h2 reveal">Why it <span class="serif">matters.</span></h2>
+    <div class="nums">
+      <div class="num reveal"><b data-count="982" data-suffix="k">0</b><span>people living with dementia in the UK, 1.4m by 2040<sup><a href="#s1">1</a></sup></span></div>
+      <div class="num reveal"><b data-count="42" data-prefix="£" data-suffix="bn">0</b><span>a year, the cost of dementia. 63% falls on families<sup><a href="#s1">1</a></sup></span></div>
+      <div class="num reveal"><b>1 in 3</b><span>unpaid dementia carers give 100+ hours a week<sup><a href="#s1">1</a></sup></span></div>
+      <div class="num reveal"><b data-count="80" data-suffix="%">0</b><span>of UK care home residents live with dementia<sup><a href="#s2">2</a></sup></span></div>
+      <div class="num reveal"><b>30–50%</b><span>of care home residents have faecal incontinence<sup><a href="#s2">2</a></sup></span></div>
+      <div class="num reveal"><b>2×</b><span>the rate of urinary incontinence diagnosis with dementia<sup><a href="#s3">3</a></sup></span></div>
+    </div>
+    <div class="quote reveal">
+      <span class="serif">“No time.”</span>
+      <p>What <b style="color:var(--ink);font-weight:500">26 caregivers</b> told me, again and again.<br>Family carers and care home staff, mostly at KYN.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="inner cost reveal">
+    <div class="tiers" id="tiers"><button data-q="1" class="on">1 unit</button><button data-q="10">10 units</button><button data-q="100">100 units</button></div>
+    <div class="big"><span id="perKit">£0</span><small> per kit</small></div>
+    <p class="kitnote">1 reusable clip + 5 washable garments, per person</p>
+    <div class="stack"><div class="c" id="stC">Clip</div><div class="g" id="stG">Garments</div></div>
+    <div class="steps" id="steps"></div>
+    <details class="bom"><summary>Full bill of materials ↓</summary><table id="bomTable"></table>
+      <div class="note">Estimated small-batch prices: hand-assembled, 3D-printed shells and retail parts at 1–10 units, batch PCB orders at 100. Labour is costed, not free. Excludes VAT, certification and margin. At 1,000+ units with moulded shells, a kit falls to about £25.</div>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="inner">
+    <div>
+      <a class="wordmark wm" href="#">careview.</a>
+      <h5>Sources</h5>
+      <ol>
+        <li id="s1">Carnall Farrar for Alzheimer's Society (2024). <a href="https://www.carnallfarrar.com/wp-content/uploads/2024/05/The-Economic-and-Healthcare-Cost-of-Dementia.pdf">The economic and healthcare cost of dementia in the UK</a>.</li>
+        <li id="s2">Goodman C et al. (2017). <a href="https://www.ncbi.nlm.nih.gov/books/NBK447301/">FINCH study</a>, NIHR Health Technology Assessment 21(42).</li>
+        <li id="s3">Grant RL et al. (2013). <a href="https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1001505">Incontinence in older people with and without dementia in primary care</a>, PLOS Medicine.</li>
+        <li id="s4"><a href="https://www.gminsights.com/pressrelease/adult-incontinence-products-market">Global Market Insights</a>: adult incontinence products $16.4bn (2024) → $27.4bn (2034).</li>
+        <li id="s5"><a href="https://www.carehome.co.uk/advice/care-home-stats-number-of-settings-population-workforce">carehome.co.uk</a>: ~441,000 UK care home residents (estimate).</li>
+        <li id="s6">Prices: <a href="https://www.mouser.ee/ProductDetail/356-ESP32-C3-MINI1H4">Mouser ESP32-C3-MINI-1</a>, <a href="https://rfid.it/en/iq-labels/5320-ntag213-nfc-sticker-29-mm-for-fast-and-secure-communication.html">rfid.it NTAG213</a>, <a href="https://core-electronics.com.au/stainless-medium-conductive-thread-3-ply-18-meter-60-ft.html">stainless thread</a>, <a href="https://www.twilio.com/en-us/sms/pricing/gb">Twilio UK SMS</a>.</li>
+      </ol>
+    </div>
+    <div>
+      <h5>Photography</h5>
+      <ol style="list-style:none;padding:0">
+        <li>Conductive thread: <a href="https://commons.wikimedia.org/wiki/File:Conductive_thread.jpg">Mosborne01</a>, CC BY-SA 3.0</li>
+        <li>Drop of water on textile: <a href="https://commons.wikimedia.org/wiki/File:Drop_of_water_on_water-resistant_textile_(100%25_polyester).jpg">Petar Milošević</a>, CC BY-SA 4.0</li>
+        <li>Embroidered textile sensors: <a href="https://commons.wikimedia.org/wiki/File:Gestickte_Textile_Sensorfl%C3%A4chen.jpg">Forster Rohner AG</a>, CC BY-SA 3.0 DE</li>
+        <li>Product render: CareView</li>
+      </ol>
+      <p style="margin-top:22px">Off-body prototype. Not a medical device.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+const io = new IntersectionObserver((es) => es.forEach((e) => {
+  if (!e.isIntersecting) return;
+  e.target.classList.add("in");
+  e.target.querySelectorAll("[data-count]").forEach((n) => {
+    const end = +n.dataset.count, pre = n.dataset.prefix || "", suf = n.dataset.suffix || "", t0 = performance.now();
+    const step = (t) => { const p = Math.min(1, (t - t0) / 1300), v = Math.round(end * (1 - Math.pow(1 - p, 3))); n.textContent = pre + v + suf; if (p < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  });
+  io.unobserve(e.target);
+}), { threshold: .15 });
+document.querySelectorAll(".reveal").forEach((n) => io.observe(n));
+
+const rooms = ["CV-1A04", "CV-21B7", "CV-3C19", "CV-4D82", "CV-5E3A", "CV-6F10", "CV-7A65", "CV-8B2C"];
+document.getElementById("grid8").innerHTML = rooms.map((id, i) => `<div class="cell"><div class="clipicon"></div><span class="room">Room ${i + 1}</span><span>${id}</span></div>`).join("");
+setInterval(() => {
+  const cells = document.querySelectorAll("#grid8 .cell");
+  cells.forEach((c) => { if (Math.random() < .35) { c.classList.remove("alert"); c.querySelector(".clipicon").classList.remove("alert"); } });
+  const c = cells[Math.floor(Math.random() * cells.length)];
+  c.classList.add("alert"); c.querySelector(".clipicon").classList.add("alert");
+}, 2200);
+let homeOn = false;
+setInterval(() => {
+  homeOn = !homeOn;
+  document.getElementById("homeClip").classList.toggle("alert", homeOn);
+  document.getElementById("homeBubble").style.opacity = homeOn ? 1 : .25;
+}, 2600);
+
+// Estimated cost per line at 1, 10 and 100 units (GBP)
+const TIERS = [1, 10, 100];
+const BOM = {
+  clip: [
+    ["Wi-Fi + Bluetooth module (ESP32-C3-MINI-1)", 3.50, 2.60, 2.00],
+    ["Custom PCB (fab + shipping, shared across the order)", 12.00, 2.50, .60],
+    ["Sensing front end, LED, passives", 1.50, .80, .45],
+    ["LiPo cell 120 mAh + charge IC", 4.50, 3.00, 1.90],
+    ["Charging contacts", 1.20, .70, .40],
+    ["NFC personal ID tag (NTAG213)", .90, .45, .34],
+    ["Stainless snap sockets × 2", .60, .30, .18],
+    ["Shell: 3D-printed (1–10) / batch-printed (100)", 9.00, 6.00, 3.50],
+    ["Assembly & test (labour)", 10.00, 5.00, 2.50],
+  ],
+  garment: [
+    ["Absorbent washable brief", 8.00, 5.00, 3.20],
+    ["Stainless conductive thread, ~2.5 m", 1.30, 1.10, .75],
+    ["Stitching the sensing lines (labour)", 6.00, 3.00, 1.20],
+    ["Snap studs × 2", .40, .20, .12],
+  ],
+};
+const GARMENTS = 5;
+const gbp = (n) => "£" + n.toFixed(2);
+const sum = (k, t) => BOM[k].reduce((a, r) => a + r[1 + t], 0);
+const kit = (t) => sum("clip", t) + GARMENTS * sum("garment", t);
+let rows = `<tr><th></th>${TIERS.map((q) => `<th style="text-align:right">${q} unit${q > 1 ? "s" : ""}</th>`).join("")}</tr>`;
+[["Reusable clip", "clip"], ["Sensing garment (each)", "garment"]].forEach(([t, k]) => {
+  rows += `<tr><th colspan="4">${t}</th></tr>` + BOM[k].map((r) => `<tr><td>${r[0]}</td>${[1, 2, 3].map((i) => `<td>${gbp(r[i])}</td>`).join("")}</tr>`).join("")
+    + `<tr><td><b>Subtotal</b></td>${[0, 1, 2].map((t) => `<td><b>${gbp(sum(k, t))}</b></td>`).join("")}</tr>`;
+});
+rows += `<tr><td><b>Kit: clip + ${GARMENTS} garments</b></td>${[0, 1, 2].map((t) => `<td><b>${gbp(kit(t))}</b></td>`).join("")}</tr>`;
+document.getElementById("bomTable").innerHTML = rows;
+document.getElementById("steps").innerHTML = TIERS.map((q, t) => `<div data-t="${t}"><b>£${Math.round(kit(t))}</b><span>${q} unit${q > 1 ? "s" : ""}</span></div>`).join("");
+function setTier(t) {
+  const clip = sum("clip", t), garments = GARMENTS * sum("garment", t);
+  document.getElementById("perKit").textContent = "£" + Math.round(clip + garments);
+  const c = document.getElementById("stC"), g = document.getElementById("stG");
+  c.style.flexGrow = clip; c.textContent = `Clip ${gbp(clip)}`;
+  g.style.flexGrow = garments; g.textContent = `${GARMENTS} garments ${gbp(garments)}`;
+  document.querySelectorAll("#tiers button").forEach((b, i) => b.classList.toggle("on", i === t));
+  document.querySelectorAll("#steps div").forEach((d, i) => d.classList.toggle("on", i === t));
+}
+document.querySelectorAll("#tiers button").forEach((b, i) => (b.onclick = () => setTier(i)));
+setTier(0);
+// The exploded clip shows parts at 1,000 units (moulded shell, reel pricing)
+window.CLIP_COST = 5.98;
+</script>
+
+<script type="module" src="scene.js"></script>
+</body>
+</html>
