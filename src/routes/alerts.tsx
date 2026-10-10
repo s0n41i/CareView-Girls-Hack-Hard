@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { HeartHandshake, Droplet, WifiOff, BatteryLow, Check, Clock } from "lucide-react";
+import { HeartHandshake, Hourglass, Hand, WifiOff, BatteryLow, Check, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { cn } from "@/lib/utils";
@@ -20,9 +20,10 @@ export const Route = createFileRoute("/alerts")({
 type Kind = "urgent" | "device" | "care";
 const initial = [
   { id: 1, kind: "urgent" as Kind, icon: HeartHandshake, msg: "Check needed", time: "1:28 pm" },
-  { id: 2, kind: "care" as Kind, icon: Droplet, msg: "Low intake by 2 pm", time: "12:45 pm" },
-  { id: 3, kind: "device" as Kind, icon: WifiOff, msg: "Device offline", time: "11:10 am" },
-  { id: 4, kind: "device" as Kind, icon: BatteryLow, msg: "Low battery", time: "9:02 am" },
+  { id: 2, kind: "care" as Kind, icon: Hourglass, msg: "Bottle not lifted for 3 hours", time: "1:15 pm" },
+  { id: 3, kind: "care" as Kind, icon: Hand, msg: "Few lifts by 2 pm", time: "12:45 pm" },
+  { id: 4, kind: "device" as Kind, icon: WifiOff, msg: "Coaster offline", time: "11:10 am" },
+  { id: 5, kind: "device" as Kind, icon: BatteryLow, msg: "Coaster battery low", time: "9:02 am" },
 ];
 const filters = ["All", "Urgent", "Devices"] as const;
 
@@ -100,7 +101,8 @@ function Alerts() {
 
 const details: Record<string, string> = {
   "Check needed": "The comfort sensor suggests a check would be helpful.",
-  "Low intake by 2 pm": "Intake is below the usual amount for this time. A drink may help.",
-  "Device offline": "The drink coaster hasn't connected for 20 minutes.",
-  "Low battery": "The sensor battery is low. Please charge it soon.",
+  "Bottle not lifted for 3 hours": "The bottle on the coaster hasn't been picked up since 10:15 am. Offering a drink may help.",
+  "Few lifts by 2 pm": "Fewer lifts than usual so far today.",
+  "Coaster offline": "The coaster hasn't connected for 20 minutes.",
+  "Coaster battery low": "The coaster battery is low. Please charge it soon.",
 };
