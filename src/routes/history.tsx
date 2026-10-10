@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Share2 } from "lucide-react";
+import { Share2, Timer } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { cn } from "@/lib/utils";
@@ -18,9 +18,9 @@ export const Route = createFileRoute("/history")({
 });
 
 const data = {
-  Day: { labels: ["8a", "10a", "12p", "2p", "4p", "6p", "8p"], values: [200, 150, 250, 100, 150, 0, 0], target: 220, events: [0, 1, 0, 1, 1, 0, 0] },
-  Week: { labels: ["M", "T", "W", "T", "F", "S", "S"], values: [1400, 1550, 1200, 1600, 1350, 1100, 850], target: 1500, events: [4, 3, 5, 3, 4, 4, 3] },
-  Month: { labels: ["W1", "W2", "W3", "W4"], values: [1450, 1380, 1520, 1300], target: 1500, events: [4, 4, 3, 4] },
+  Day: { labels: ["8a", "10a", "12p", "2p", "4p", "6p", "8p"], values: [200, 150, 250, 100, 150, 0, 0], target: 220, events: [[0,0],[1,0],[0,0],[1,0],[0,1],[0,0],[0,0]] as [number,number][] },
+  Week: { labels: ["M", "T", "W", "T", "F", "S", "S"], values: [1400, 1550, 1200, 1600, 1350, 1100, 850], target: 1500, events: [[3,1],[3,0],[4,1],[2,1],[3,1],[4,0],[2,1]] as [number,number][] },
+  Month: { labels: ["W1", "W2", "W3", "W4"], values: [1450, 1380, 1520, 1300], target: 1500, events: [[3,1],[3,1],[3,0],[3,1]] as [number,number][] },
 };
 type Range = keyof typeof data;
 
@@ -53,12 +53,24 @@ function History() {
         </div>
         <p className="mt-6 text-sm text-muted-foreground">Sensor events</p>
         <div className="mt-2 flex gap-2">
-          {d.events.map((n, i) => (
+          {d.events.map(([wet, soiled], i) => (
             <div key={i} className="flex flex-1 flex-col items-center gap-1">
-              {Array.from({ length: n }).map((_, j) => <span key={j} className="h-2 w-2 rounded-full bg-accent-foreground/60" />)}
-              {n === 0 && <span className="h-2 w-2 rounded-full bg-muted" />}
+              {Array.from({ length: wet }).map((_, j) => <span key={"w"+j} className="h-2.5 w-2.5 rounded-full bg-warning" />)}
+              {Array.from({ length: soiled }).map((_, j) => <span key={"s"+j} className="h-2.5 w-2.5 rounded-full bg-destructive" />)}
+              {wet + soiled === 0 && <span className="h-2.5 w-2.5 rounded-full bg-muted" />}
             </div>
           ))}
+        </div>
+        <div className="mt-4 flex gap-4 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-warning" /> Wet</span>
+          <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-destructive" /> Soiled</span>
+        </div>
+      </section>
+      <section className="mt-4 flex items-center gap-3 rounded-2xl bg-card p-5">
+        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-secondary text-secondary-foreground"><Timer className="h-5 w-5" /></span>
+        <div>
+          <p className="text-sm text-muted-foreground">Average time to change</p>
+          <p className="font-display text-2xl font-semibold">18 min</p>
         </div>
       </section>
       <button onClick={() => toast("Report ready to share")} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 font-medium text-primary-foreground">
