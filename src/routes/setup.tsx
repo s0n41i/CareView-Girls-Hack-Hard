@@ -7,9 +7,9 @@ export const Route = createFileRoute("/setup")({
   head: () => ({
     meta: [
       { title: "Set up sensors — CareView" },
-      { name: "description", content: "Pair the drink coaster and sensor in a few simple steps." },
+      { name: "description", content: "Pair the coaster and sensor in a few simple steps." },
       { property: "og:title", content: "Set up sensors — CareView" },
-      { property: "og:description", content: "Pair the drink coaster and sensor in a few simple steps." },
+      { property: "og:description", content: "Pair the coaster and sensor in a few simple steps." },
     ],
   }),
   component: Setup,
@@ -20,7 +20,7 @@ function Setup() {
   const [scanned, setScanned] = useState(false);
   const steps = [
     { icon: HeartHandshake, title: "Welcome", body: "Let's connect the devices. This takes about two minutes." },
-    { icon: Droplet, title: "Place the drink coaster", body: "Put the coaster on a flat surface near the bed and set the usual cup on it." },
+    { icon: Droplet, title: "Place the coaster", body: "Put the coaster on a flat surface near the bed and stand the usual bottle on it." },
     { icon: QrCode, title: "Scan the sensor QR code", body: "Hold the QR code on the sensor inside the frame." },
     { icon: CheckCircle2, title: "All set", body: "Everything is connected. You'll see readings on the Today screen." },
   ];
