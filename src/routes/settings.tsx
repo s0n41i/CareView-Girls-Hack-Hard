@@ -29,8 +29,31 @@ const rows = [
 function AlertsPanel() {
   const [night, setNight] = useState(true);
   const [mins, setMins] = useState(20);
+  const [goal, setGoal] = useState(8);
+  const [hours, setHours] = useState(3);
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      <div className="flex items-center justify-between gap-3">
+        <span className="font-medium">Daily lift goal</span>
+        <div className="flex items-center gap-3">
+          <button aria-label="Fewer" onClick={() => setGoal((g) => Math.max(1, g - 1))} className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground"><Minus className="h-4 w-4" /></button>
+          <span className="w-8 text-center font-display text-2xl font-semibold">{goal}</span>
+          <button aria-label="More" onClick={() => setGoal((g) => Math.min(20, g + 1))} className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground"><Plus className="h-4 w-4" /></button>
+        </div>
+      </div>
+      <div>
+        <p className="mb-2 font-medium">Alert if not lifted for</p>
+        <div className="grid grid-cols-3 rounded-full bg-muted p-1">
+          {[2, 3, 4].map((h) => (
+            <button key={h} onClick={() => setHours(h)}
+              className={cn("rounded-full py-2 text-sm", hours === h ? "bg-card font-semibold shadow-sm" : "text-muted-foreground")}>{h} hours</button>
+          ))}
+        </div>
+      </div>
+      <p className="flex gap-2 rounded-xl bg-warning-soft p-3 text-sm">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
+        Lifts show the bottle has been picked up, not how much was drunk.
+      </p>
       <label className="flex items-center justify-between gap-3">
         <span className="font-medium">Sensor alerts at night</span>
         <Switch checked={night} onCheckedChange={setNight} />
