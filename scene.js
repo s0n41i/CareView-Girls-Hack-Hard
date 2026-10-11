@@ -315,6 +315,7 @@ function soic(parent, x, y, z, w = .5, d = .4) {
 
   // ---- Same rules as caregiver_sms.ino ----
   const CFG = { wetBelow: 2500, dryAbove: 2700, alertAfterMs: 10000 };
+  const statusChip = $("stText").parentElement;
   const COLORS = { dry: 0x3fbf7f, timing: 0xffb020, alerted: 0xff4d3a };
   let wetness = 0, state = "dry", timingSince = 0, live = false, liveRaw = null;
   function setState(st) {
@@ -340,7 +341,7 @@ function soic(parent, x, y, z, w = .5, d = .4) {
     if (!("serial" in navigator)) return alert("Connecting the board needs Chrome or Edge.");
     try { port = await navigator.serial.requestPort(); await port.open({ baudRate: 115200 }); } catch { port = null; return; }
     live = true; liveRaw = null;
-    $("btnLive").classList.add("live"); $("liveLbl").textContent = "Disconnect"; $("srcChip").textContent = "Live · my board"; $("connectCard").hidden = true;
+    $("btnLive").classList.add("live"); $("liveLbl").textContent = "Disconnect"; $("connectCard").hidden = true;
     setState("dry");
     const dec = new TextDecoderStream(); pipeDone = port.readable.pipeTo(dec.writable).catch(() => {}); reader = dec.readable.getReader();
     let buf = "";
@@ -352,7 +353,7 @@ function soic(parent, x, y, z, w = .5, d = .4) {
     try { await reader?.cancel(); } catch {} await pipeDone;
     try { await p?.close(); } catch {}
     liveRaw = null; wetness = 0;
-    $("btnLive").classList.remove("live"); $("liveLbl").textContent = "Connect my board"; $("srcChip").textContent = "Not connected"; $("connectCard").hidden = false; setState("dry");
+    $("btnLive").classList.remove("live"); $("liveLbl").textContent = "Connect my board"; $("connectCard").hidden = false; setState("dry");
   }
   function onLine(line) {
     line = line.trim(); let m;
@@ -383,7 +384,7 @@ function soic(parent, x, y, z, w = .5, d = .4) {
     wetMat.opacity = Math.min(.95, wetness * 1.1);
     const wetOn = raw != null && raw < CFG.wetBelow; doLedMat.color.setHex(wetOn ? 0x22ff55 : 0x173117); doGlow.visible = wetOn;
     ledMat.visible = ledGlow.visible = live; ledLight.visible = live;
-    if (!live) $("stDot").style.background = "#b0aea9";
+    statusChip.style.visibility = live ? "visible" : "hidden";
     const pulse = Math.sin(now / (state === "alerted" ? 120 : 600));
     ledLight.intensity = 6 + pulse * (state === "dry" ? 1 : 3);
     ledGlow.material.opacity = .75 + pulse * .2;
