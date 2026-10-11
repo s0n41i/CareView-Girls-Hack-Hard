@@ -93,17 +93,6 @@
   .dock button span { position: absolute; bottom: 100%; margin-bottom: 12px; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); white-space: nowrap; opacity: 0; transition: opacity .2s; }
   .dock button:hover span { opacity: 1; }
   .tag3d { position: absolute; transform: translate(-50%, -100%); font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; background: rgba(255,255,255,.85); padding: 5px 10px; border-radius: 999px; pointer-events: none; white-space: nowrap; margin-top: -14px; }
-  .sendto { position: absolute; left: 28px; bottom: 26px; display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 18px; border-radius: 999px;
-    background: rgba(255,255,255,.8); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 10px 30px rgba(0,0,0,.08); font-size: 13px; }
-  .sendto[hidden] { display: none; }
-  .sendto label { color: var(--muted); white-space: nowrap; }
-  .sendto input { width: 170px; border: 0; outline: 0; background: #f0efec; border-radius: 999px; padding: 10px 14px; font: 500 14px var(--sans); color: var(--ink); }
-  .sendto input:focus { box-shadow: 0 0 0 2px var(--ink); }
-  .sendto button { border-radius: 999px; padding: 10px 14px; font-size: 13px; font-weight: 500; background: #f0efec; white-space: nowrap; }
-  .sendto button.save { background: var(--ink); color: #fff; }
-  .sendto small { position: absolute; left: 18px; bottom: 100%; margin-bottom: 8px; font-size: 12px; color: var(--muted); white-space: nowrap; }
-  .sendto small.ok { color: #1f8a55; } .sendto small.err { color: #c8392b; }
-  @media (max-width: 1000px) { .sendto { left: 16px; right: 16px; bottom: 100px; flex-wrap: wrap; border-radius: 22px; } .sendto input { flex: 1; } }
   .hint { position: absolute; left: 28px; bottom: 34px; font-size: 12px; color: var(--muted); letter-spacing: .04em; }
   @media (max-width: 760px) { .hint { display: none; } .rawbig { font-size: 52px; } .tag3d { display: none; } }
 
@@ -257,13 +246,7 @@
         <div class="meter"><i id="meterFill" style="width:100%"></i><b style="left:61%"></b></div>
       </div>
       <div class="ov tr"><span class="chip" style="visibility:hidden"><i id="stDot"></i><span id="stText"></span></span></div>
-      <form class="sendto" id="sendTo">
-        <small id="sendStatus">Get a real text when the sensor goes wet</small>
-        <label for="phone">Text alerts to</label>
-        <input id="phone" type="tel" inputmode="tel" placeholder="+44 7700 900000" autocomplete="tel">
-        <button type="submit" class="save">Save</button>
-        <button type="button" id="testText">Send test</button>
-      </form>
+      <div class="hint">Drag to rotate</div>
       <div class="connect-card" id="connectCard"><b>Connect the prototype</b><span>Chrome or Edge · close Arduino's Serial Monitor first</span></div>
       <div class="dock">
         <button id="btnLive" class="connect" aria-label="Connect my board"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 7V3m6 4V3M7 7h10v4a5 5 0 0 1-10 0V7Zm5 9v5"/></svg><b id="liveLbl">Connect my board</b></button>

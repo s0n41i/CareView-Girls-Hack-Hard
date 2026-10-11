@@ -336,41 +336,6 @@ function soic(parent, x, y, z, w = .5, d = .4) {
 
   // ---- Web Serial: the real board drives the model ----
   let port = null, reader = null, pipeDone = null;
-  // ---- Real texts: the site sends them when the board reports an alert ----
-  const status = (text, cls = "") => { const el = $("sendStatus"); el.textContent = text; el.className = cls; };
-  // Accepts UK-style input (07..., 44..., spaces) and returns +44... or null.
-  function normalisePhone(v) {
-    let n = v.replace(/[\s\-().]/g, "");
-    if (n.startsWith("00")) n = "+" + n.slice(2);
-    if (/^07\d{9}$/.test(n)) n = "+44" + n.slice(1);
-    if (/^44\d+$/.test(n)) n = "+" + n;
-    if (n.startsWith("+440")) n = "+44" + n.slice(4);
-    return /^\+\d{8,15}$/.test(n) ? n : null;
-  }
-  let recipient = null;
-  try { recipient = localStorage.getItem("careview-to"); } catch {}
-  if (recipient) { $("phone").value = recipient; status(`Alerts go to ${recipient.slice(0, 3)} ••• ${recipient.slice(-3)}`, "ok"); }
-  const WHY = { 21608: "this number isn't verified in your Twilio trial", 21408: "UK isn't enabled in Twilio Geo permissions", 20003: "Twilio keys are wrong", 21211: "invalid number", 21212: "invalid Twilio From number", 21606: "the From number can't send SMS" };
-  async function textCarer(kind) {
-    if (!recipient) { status("Add a number to get a real text", "err"); return; }
-    status(kind === "test" ? "Sending test…" : "Texting the carer…");
-    try {
-      const r = await fetch("/api/sms", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ to: recipient, kind }) });
-      const d = await r.json().catch(() => ({}));
-      if (r.ok) status(`Text sent to ${recipient.slice(0, 3)} ••• ${recipient.slice(-3)} ✓`, "ok");
-      else if ([404, 405, 501].includes(r.status)) status("Real texts only work on the Vercel site", "err");
-      else status(`Not sent: ${WHY[d.code] || d.error || "error " + r.status}`, "err");
-    } catch { status("Not sent: no internet connection", "err"); }
-  }
-  $("sendTo").onsubmit = (e) => {
-    e.preventDefault();
-    const n = normalisePhone($("phone").value);
-    if (!n) return status("Use a mobile number like +44 7700 900000", "err");
-    recipient = n; $("phone").value = n;
-    try { localStorage.setItem("careview-to", n); } catch {}
-    status(`Alerts go to ${n.slice(0, 3)} ••• ${n.slice(-3)}`, "ok");
-  };
-  $("testText").onclick = () => textCarer("test");
   $("btnLive").onclick = async () => {
     if (port) return disconnect();
     if (!("serial" in navigator)) return alert("Connecting the board needs Chrome or Edge.");
@@ -395,7 +360,8 @@ function soic(parent, x, y, z, w = .5, d = .4) {
     if ((m = line.match(/^MOISTURE_RAW:(\d+)/))) liveRaw = +m[1];
     else if (line.startsWith("WET_STATE:TIMING")) setState("timing");
     else if (line.startsWith("WET_STATE:DRY")) setState("dry");
-    else if (line.startsWith("CAREGIVER_ALERT")) { setState("alerted"); notify("Margaret may need a check."); textCarer("alert"); }
+    else if (line.startsWith("CAREGIVER_ALERT")) setState("alerted");
+    else if ((m = line.match(/^SMS_(?:SIMULATED|SENT):(.*)$/))) notify(m[1]);
   }
 
   // ---- Loop ----
